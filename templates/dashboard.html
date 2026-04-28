@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Expense Dashboard</title>
+
+    <!-- Link CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="header">
+            <h1>📊 Expense Dashboard</h1>
+            <a href="/logout" class="logout">Logout</a>
+        </div>
+
+        <!-- FORM -->
+        <form action="/add" method="POST" class="form">
+            <input type="number" name="amount" placeholder="Amount" required>
+            <input type="text" name="category" placeholder="Category" required>
+            <input type="text" name="description" placeholder="Description">
+            <button type="submit">Add</button>
+        </form>
+
+        <!-- TABLE -->
+        <h2>Your Expenses</h2>
+
+        {% if expenses %}
+        <table>
+            <tr>
+                <th>Amount</th>
+                <th>Category</th>
+                <th>Description</th>
+            </tr>
+
+            {% for e in expenses %}
+            <tr>
+                <td>₹{{ e[2] }}</td>
+                <td>{{ e[3] }}</td>
+                <td>{{ e[4] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p class="empty">No expenses yet 🚀</p>
+        {% endif %}
+
+        <!-- CHART -->
+        <h2>📊 Monthly Expenses</h2>
+        <canvas id="myChart"></canvas>
+
+    </div>
+
+    <script>
+        const labels = {{ months | tojson }};
+        const dataValues = {{ totals | tojson }};
+
+        const ctx = document.getElementById('myChart');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Monthly Expenses',
+                    data: dataValues,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
